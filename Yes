@@ -1,0 +1,71 @@
+-- Get the local player
+local player = game:GetService("Players").LocalPlayer
+
+-- Function to toggle invincibility
+local function ToggleInvincibility()
+    -- Get the character
+    local character = player.Character
+    if character then
+        -- Get the character's humanoid
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            -- Intercept damage events
+            local function onHealthChanged()
+                humanoid.Health = humanoid.MaxHealth -- Reset health to max whenever it changes
+            end
+            humanoid.HealthChanged:Connect(onHealthChanged)
+        end
+    end
+end
+
+-- Create a ScreenGui for the toggle button
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
+-- Create a TextButton for the toggle
+local button = Instance.new("TextButton")
+button.Parent = screenGui
+button.Position = UDim2.new(0, 0, 0.5, 0)
+button.Size = UDim2.new(0, 200, 0, 50)
+button.Text = "Toggle Invincibility\nMade by M340i" -- Include the comment inside the button's text
+button.Font = Enum.Font.SourceSans
+button.TextSize = 20
+
+-- Function to handle button press
+local function OnButtonPress()
+    ToggleInvincibility()
+    if button.Text == "Toggle Invincibility\nMade by M340i" then
+        button.Text = "You're invincible!"
+    else
+        button.Text = "Toggle Invincibility\nMade by M340i"
+    end
+end
+
+-- Connect button click event to toggle function
+button.MouseButton1Click:Connect(OnButtonPress)
+
+-- Rainbow animation function
+local colors = {
+    Color3.fromRGB(255, 0, 0), -- Red
+    Color3.fromRGB(255, 127, 0), -- Orange
+    Color3.fromRGB(255, 255, 0), -- Yellow
+    Color3.fromRGB(0, 255, 0), -- Green
+    Color3.fromRGB(0, 0, 255), -- Blue
+    Color3.fromRGB(75, 0, 130), -- Indigo
+    Color3.fromRGB(148, 0, 211) -- Violet
+}
+
+local rainbowTime = 5 -- Duration for one complete cycle of the rainbow animation (in seconds)
+local rainbowSpeed = 0.05 -- Speed of color transition (smaller values = faster)
+
+while true do
+    for i = 1, #colors - 1 do
+        local startColor = colors[i]
+        local endColor = colors[i + 1]
+        for t = 0, 1, rainbowSpeed do
+            local lerpedColor = startColor:Lerp(endColor, t)
+            button.TextColor3 = lerpedColor
+            wait(rainbowTime / #colors * rainbowSpeed)
+        end
+    end
+end
